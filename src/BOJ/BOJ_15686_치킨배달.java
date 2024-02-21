@@ -15,7 +15,7 @@ public class BOJ_15686_치킨배달 {
 
 	public static void main(String[] args) throws IOException {
 		/**
-		 * BOJ 15686. 치키 배달
+		 * BOJ 15686. 치킨 배달
 		 * -----------------
 		 * 
 		 * NxN 도시
