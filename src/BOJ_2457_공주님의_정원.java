@@ -11,184 +11,94 @@ public class BOJ_2457_공주님의_정원 {
 	public static void main(String[] args) throws IOException {
 		/**
 		 * 
-		 * 프리랜서 := BOJ 2457. 공주님의 정원
-		 * -----
+		 * 프리랜서 := BOJ 2457. 공주님의 정원 -----
 		 * 
-		 * N개의 프로젝트
-		 * 같은 해에 시작해서 같은 해에 마무리
-		 * [)
+		 * N개의 프로젝트 같은 해에 시작해서 같은 해에 마무리 [)
 		 * 
-		 * 조건을 만족하는 프로젝트 선택
-		 * 1) 3.1 ~ 11.30까지 매일 한 가지 이상의 프로젝트에 참여
-		 * 2) 프로젝트의 수를 가능한 적게
+		 * 조건을 만족하는 프로젝트 선택 1) 3.1 ~ 11.30까지 매일 한 가지 이상의 프로젝트에 참여 2) 프로젝트의 수를 가능한 적게
 		 * 
 		 * 1 <= N <= 100,000
 		 * 
 		 */
-		
-		/**
-		 * TC
-		 * 4
-1 1 3 3
-2 2 2 3
-3 3 9 9
-9 9 12 12
-		 */
 
-		// Input
+		// 입력
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
-				
 		StringBuilder sb = new StringBuilder();
-			
-		// 입력
+
 		N = Integer.parseInt(br.readLine());
-		min = Integer.MAX_VALUE;
-		
-		arr = new int[N][4];
-		for(int i=0;i<N;i++) {
+		arr = new int[N][2];
+
+		for (int i = 0; i < N; i++) {
 			StringTokenizer st = new StringTokenizer(br.readLine());
-			int sMonth = Integer.parseInt(st.nextToken());
+			int sMonth = Integer.parseInt(st.nextToken()) * 100;
 			int sDay = Integer.parseInt(st.nextToken());
-			int eMonth = Integer.parseInt(st.nextToken());
+			int eMonth = Integer.parseInt(st.nextToken()) * 100;
 			int eDay = Integer.parseInt(st.nextToken());
-			arr[i][0] = sMonth;
-			arr[i][1] = sDay;
-			arr[i][2] = eMonth;
-			arr[i][3] = eDay;
+			arr[i][0] = sMonth + sDay;
+			arr[i][1] = eMonth + eDay;
 		}
-		
+
 		// 문제풀이
 		Arrays.sort(arr, (o1, o2) -> {
-			if(o1[0] == o2[0] && o1[1] == o2[1] && o1[2] == o2[2]) {
-				return o1[3] - o2[3];
+
+			if (o1[0] == o2[0]) {
+				return o1[1] - o2[1]; // 같으면 끝
 			}
-			if(o1[0] == o2[0] && o1[1] == o2[1]) {
-				return o1[2] - o2[2];
-			}
-			
-			if(o1[0] == o2[0]) {
-				return o1[1] - o2[1]; // 같으면 시작 일
-			}
-			return o1[0] - o2[0]; // 시작 월
+			return o1[0] - o2[0]; // 시작
 		});
-		
-//		for(int[] i : arr) {
-//			System.out.println(Arrays.toString(i));
-//		}
-//		System.out.println();
-		
+
 		check();
-		
+
 		// 출력
-		if(min == Integer.MAX_VALUE) {
-			min = 0;
-		}
 		sb.append(min);
 		bw.write(sb.toString());
 		bw.flush();
-		
+
 		bw.close();
 		br.close();
 	}
-	
+
 	static int N;
 	static int[][] arr;
 	static int min;
-	
+
 	static void check() {
 		int cnt = 0;
-		int sm = arr[0][0];
-		int sd = arr[0][1];
-		int em = arr[0][2];
-		int ed = arr[0][3];		
-		
-		for(int i=0;i<N;i++) {
-			boolean change = false;
-//			System.out.println(Arrays.toString(arr[i]));
+		int end = 301;
 
-			System.out.println("start: " + Arrays.toString(arr[i]));
-			int nem = arr[i][2];
-			int ned = arr[i][3];
-//			System.out.println("nem : " + nem + ", end : " + ned);
-			for(int j=i;j<N;j++) { // 현재부터 반복
-				// 끝 < 시작이면 볼 필요 없음
-				if(em < arr[j][0] ) { 
+		int max = 0;
+		int idx = 0;
+		while (end < 1201) {
+			max = 0; // 현재 끝 시간보다 시작 시간이 빠른 원소 중 끝 시간이 가장 긴 원소
+			boolean flag = false; // 변환 체크
+			for (int i = idx; i < N; i++) { // idx부터 순회
+				if (end < arr[i][0]) { // 중간에 빈 공간이 생김
 					break;
 				}
-				else if(em == arr[j][0]) {
-					if(ed < arr[j][1]) {
-						break;
-					}
-				}
 
-				// 시작 < 끝이면 갱신
-				
-				if(arr[j][0] < em) {
-					nem = arr[j][2];
-					ned = arr[j][3];
-					i = j;
-					change = true;
-					System.out.println("ch" + Arrays.toString(arr[j]));
+				// 현재 끝 시간보다 같거나 먼저 끝나고 끝나는 시간이 가장 긴 원소
+				if (arr[i][0] <= end && max < arr[i][1]) {
+					max = arr[i][1];
+					idx = i + 1; // 이 원소 다음 원소부터 시작
+					flag = true;
 				}
-				else if(arr[j][0] == em) {
-					if(arr[j][1] <= ed) {
-						i = j;
-						nem = arr[j][2];
-						ned = arr[j][3];
-						change = true;
-						System.out.println("ch" + Arrays.toString(arr[j]));
-					}
-				}
-//				if(change== true) {
-//					System.out.println(Arrays.toString(arr[j]));
-//				}
-				
- 			}
-			
-			if(change == true) {
-				em = nem;
-				ed = ned;
-				cnt++;
 			}
-			else {
+
+			// 값 변환이 이루어졌다면
+			if (flag == true) {
+				end = max;
+				cnt++;
+			} else { // 변환이 없음: 정렬했기 때문에 이후로도 없음
 				break;
 			}
-			
-			// 종료가 안되고 있음
-			System.out.println(cnt);
-			System.out.println("result: " + sm + " " + sd + " " + em + " " +ed);
-			System.out.println();
-			
-		
-			// 되는지 체크
-			boolean flag = true;
-			if(sm > 3) {
-				flag = false;
-			}
-			else if(sm == 3) {
-				if(sd > 1) {
-					flag = false;
-				}
-			}
-			
-			if(em < 11) {
-				flag = false;
-			}
-			else if(em == 11) {
-				if(ed <= 30) { // [)
-					flag = false;
-				}
-			}
-			
-			if(flag == true) {	
-//				break;
-				min = Math.min(min, cnt);
-			}
 		}
-//		System.out.println();
-//		
 
+		if (max < 1201) {
+			min = 0;
+		} else {
+			min = cnt;
+		}
 	}
 
 }

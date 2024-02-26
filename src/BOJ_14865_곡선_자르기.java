@@ -1,159 +1,157 @@
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Stack;
 import java.util.StringTokenizer;
 
 public class BOJ_14865_곡선_자르기 {
 
 	public static void main(String[] args) throws IOException {
 		/**
-		 * 산악 지도 그리기 := BOJ 곡선 자르기
-		 * -----------
+		 * 산악 지도 그리기 := BOJ 곡선 자르기 -----------
 		 * 
-		 * 직사각형 캔버스
-		 * 중앙 원점(0, 0), (y, x)
-		 * Cycle이 있는 그래프
+		 * 직사각형 캔버스 중앙 원점(0, 0), (y, x) Cycle이 있는 그래프
 		 * 
-		 * x축을 기준으로 양분
-		 * x축 위 부분으로 봉우리 판단
+		 * x축을 기준으로 양분 x축 위 부분으로 봉우리 판단
 		 * 
-		 * 포함되지 않는 봉우리 개수
-		 * 포함하지 않는 봉우리 개수
-		 * 출력
+		 * 포함되지 않는 봉우리 개수 포함하지 않는 봉우리 개수 출력
 		 * 
-		 * 4 <= N <= 10^6
-		 * -10^9 <= x, y <= 10^9 : int
-		 * y != 0
+		 * 서브테스크 문제 N <1,000이하 11점 N <= 10,000이하 24점 4 <= N <= 10^6이하 65점 -10^9 <= x, y
+		 * <= 10^9 : int y != 0
+		 * 
 		 */
 
-		
-//		System.setIn(new FileInputStream("3번_Input.txt"));
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
-		
-		// Test case
-//		T = 2;
-//		for(int t=1;t<=T;t++) {
-			// 입력
-			StringBuilder sb = new StringBuilder();
-//			br.readLine(); // 주석 건너뛰기
-			N = Integer.parseInt(br.readLine());
-			
-			int cnt = 0; // 전체 봉우리
-			int cnt1 = 0; // 포함되지 않는 봉우리
-			int cnt2 = 0; // 포함하는 봉우리
-			int cnt3 = 0; // 포함되는 봉우리
-			int cnt4 = 0; // 포함하는 봉우리
-			
+
+		// 입력
+		StringBuilder sb = new StringBuilder();
+		N = Integer.parseInt(br.readLine());
+
+		List<Point> list = new ArrayList<>();
+		List<Node> peak = new ArrayList<>();
+		int sx = Integer.MAX_VALUE;
+		int sy = Integer.MAX_VALUE;
+		int x, y, idx = 0;
+
+		for (int i = 0; i < N; i++) {
 			StringTokenizer st = new StringTokenizer(br.readLine());
-			int preX = Integer.parseInt(st.nextToken());
-			int preY = Integer.parseInt(st.nextToken());
-			
-			int d = 5; // {0, 1, 2, 3}; // 상 하 좌 우 
-			int preD = 5;
-			boolean contain = false;
-			
-			arr = new int[N][2];
-			for(int i=0;i<N-1;i++) {
-				st = new StringTokenizer(br.readLine());
-				arr[i][0] = Integer.parseInt(st.nextToken());
-				arr[i][1] = Integer.parseInt(st.nextToken());
+			x = Integer.parseInt(st.nextToken());
+			y = Integer.parseInt(st.nextToken());
+
+			// 시작에 일관성을 주기위해 왼쪽 아래부터 시작
+			if (x < sx && y < 0) {
+				sx = x;
+				sy = y;
+				idx = i;
 			}
-			arr[N-1][0] = preX;
-			arr[N-1][1] = preY;
-			
-			for(int i=0;i<N;i++) {
-				
-				int x = arr[i][0];
-				int y = arr[i][1];
 
-//				현재 진행 방향
-				// 위로 간다면 방향 바꾸기
-				if(preY < y) {
-					d = 0;
-				}
-				// 아래로 간다면 방향 바꾸기
-				if(preY > y) {
-					d = 1;
-				}
-				// 왼쪽으로 간다면 방향 바꾸기
-				if(preX < x) {
-					d = 2; // 좌
-				}
-				// 오른쪽으로 간다면 방향 바꾸기
-				if(preX > x ) { 
-					d = 3; // 우
-				}
-				
-				// y값이 - > +로 변환 시 봉우리 개수 +1
-				if(preY < 0 && y > 0) {
-					cnt++;
-				}
-				
-				// x값이 우 -> 좌로 간다면 포함되지 않음
-				if(y > 0 && preX < x) { // ->
-					if(preD != 2 && d == 2) { // 처음 왼쪽으로 왔을 때만
-						cnt2++;
-					}
-					
-					// 포함
-					if(contain == true) {
-						contain = false;
-					}
-				}
+			list.add(new Point(x, y));
+		}
 
-				
-				// x값이 좌 -> 우로 간다면 포함됨
-				if(y > 0 && x < preX) { // <-
-					if(preD != 3 && d == 3) { // 처음 오른쪽으로 왔을 때만
-						cnt3++;
-						
-						// 이전에 왼쪽에서 오다가 오른쪽으로 처음 바뀌면 1개 포함하는 거 있음
-						if(contain == false) {
-							contain = true;
-							cnt4++;
-						}
-					}
-				}
+		int px = sx;
+		int py = sy;
+		int len = list.size();
 
-				
-				preY = y;
-				preX = x;
-				preD = d;
+		for (int i = 0; i < len; i++) {
+			Point now = list.get((idx + i) % len); // 시작 지점을 idx부터
+
+			// - => + 봉우리 시작지점
+			if (py < 0 && now.y > 0) {
+				px = now.x;
+				py = now.y;
 			}
-			
-			
-			// 출력
-//			sb.append("#").append(t).append(" ");
-			// 포함되지 않는 : 전체 - 포함되는
-			// 포함하지 않는	: 전체 - 포함하는  
-			sb.append(cnt - cnt3).append(" " ).append(cnt - cnt4);
-			sb.append("\n");
-			bw.write(sb.toString());
-			bw.flush();
-//		}
+			// + => - 봉우리 끝나는 지점
+			else if (py > 0 && now.y < 0) {
+				// 왼쪽으로 가는 봉우리 or 오른쪽으로 가는 봉우리
+				int minX = Math.min(px, now.x);
+				int maxX = Math.max(px, now.x);
+
+				px = now.x;
+				py = now.y;
+
+				Node left = new Node(minX, true); // y좌표는 필요 없음, 봉우리 시작
+				Node right = new Node(maxX, false); // 봉우리 끝
+				peak.add(left);
+				peak.add(right);
+			}
+		}
+
+		// 정렬 x좌표가 커지는 순
+		Collections.sort(peak);
+
+		// 봉우리를 담는 스택
+		Stack<Integer> stack = new Stack<>();
+		int length = peak.size();
+		int num = 0;
+
+		for (int i = 0; i < length; i++) {
+			boolean check = peak.get(i).isStart;
+
+			if (check == true) { // 시작하는 봉우리 Push
+				stack.add(num);
+			} else { // 끝나는 봉우리
+				int left = stack.pop(); // Pop
+
+				if (stack.isEmpty()) { // pop했는데 스택에 남아있는게 없음 == 겹쳐있는 봉우리가 없음
+					NoCover++; // 포함하지 않음
+				}
+
+				// pop했을 때 스택에 남아있는게 있음 == 봉우리가 겹쳐 있음
+				if (left == num) { // push - pop이 바로 이어져있음
+					NoContain++; // 포함된 봉우리, 포함하지 않음
+				}
+
+				// pop했을 때, 스택에 남아있는게 있음
+				// push - pop이 연결되어 있지 않음 == 내부에 다른 봉우리가 존재함
+				// 포함하면서, 포함되는 상태
+				num++;
+			}
+		}
+
+		// 출력
+		// 포함되지 않는 : 전체 - 포함되는
+		// 포함하지 않는 : 전체 - 포함하는
+		sb.append(NoCover).append(" ").append(NoContain);
+		bw.write(sb.toString());
+		bw.flush();
+
 		bw.close();
 		br.close();
 	}
 
-	static int T;
 	static int N;
-	static int[][] arr;
-	
-	static class Node {
-		int y;
+	static int NoCover;
+	static int NoContain;
+
+	static class Point {
 		int x;
-		
-		public Node(int y, int x) {
-			this.y = y;
+		int y;
+
+		public Point(int x, int y) {
 			this.x = x;
+			this.y = y;
 		}
 	}
-	
+
+	static class Node implements Comparable<Node> {
+		int start;
+		boolean isStart;
+
+		public Node(int start, boolean isStart) {
+			this.start = start;
+			this.isStart = isStart;
+		}
+
+		@Override
+		public int compareTo(Node o) {
+			return this.start - o.start;
+		}
+	}
+
 }
