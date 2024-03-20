@@ -1,3 +1,4 @@
+package BOJ;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -6,7 +7,7 @@ import java.io.OutputStreamWriter;
 import java.util.Arrays;
 import java.util.StringTokenizer;
 
-public class Main {
+public class BOJ_11049_행렬곱셈순서 {
 
 	public static void main(String[] args) throws IOException {
 		/**
