@@ -1,3 +1,4 @@
+package BOJ;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -6,7 +7,7 @@ import java.io.OutputStreamWriter;
 import java.util.Arrays;
 import java.util.StringTokenizer;
 
-public class Main {
+public class BOJ_2565_전깃줄 {
 	/*
 	 * BOJ 2565. 전깃줄 
 	 * --------------
