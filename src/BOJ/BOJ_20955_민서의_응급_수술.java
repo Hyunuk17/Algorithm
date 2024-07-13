@@ -1,3 +1,4 @@
+package BOJ;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -5,7 +6,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.util.StringTokenizer;
 
-public class Main {
+public class BOJ_20955_민서의_응급_수술 {
 	/*
 	 * BOJ 20955. 민서의 응급 수술 
 	 * -----------------------
