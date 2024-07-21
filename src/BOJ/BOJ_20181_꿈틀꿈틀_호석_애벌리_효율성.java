@@ -1,3 +1,4 @@
+package BOJ;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -5,7 +6,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.util.StringTokenizer;
 
-public class Main {
+public class BOJ_20181_꿈틀꿈틀_호석_애벌리_효율성 {
 	/*
 	 * BOJ 20181. 꿈틀꿈틀 호석 애벌레 - 효율성 
 	 * ----------------------------------
