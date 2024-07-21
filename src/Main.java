@@ -3,34 +3,30 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.util.Arrays;
 import java.util.StringTokenizer;
 
 public class Main {
 	/*
-	 * BOJ 20955. 민서의 응급 수술 
-	 * -----------------------
+	 * BOJ 21757. 나누기 
+	 * ---------------
 	 * 
 	 * [문제 설명] 
-	 * 뇌 속의 모든 뉴런을 하나의 트리 형태로 연결 
-	 * - 사이클이 존재하지 않는 연결 그래프
+	 * N개의 정수 수열 A1, A2 ... AN 
+	 * - 수열을 각각이 연속된 네 부분으로 분할 
+	 * - 각 부분은 최소 하나의 수를 포함
+	 * - 각 부분의 합은 모두 같음
 	 * 
-	 * 가능한 연산 
-	 * - 연결되지 않은 두 뉴런 연결 
-	 * - 이미 연결된 두 뉴런의 연결 끊기
+	 * 가능한 방법의 개수를 구하기
 	 * 
-	 * 모든 뉴런을 하나의 트리 형태로 연결하는 최소 연산 횟수 구하기
 	 * 
 	 * [입력] 
-	 * 뉴런의 개수 : N 
-	 * 시냅스의 개수 : M 
-	 * 시냅스로 연결된 두 뉴런의 번호 : u, v
+	 * 수열의 길이 N 
+	 * N개의 정수 A1, A2 ... AN
 	 * 
 	 * [제한사항] 
-	 * 2 <= N <= 100,000 
-	 * 1 <= M <= min(N * (N-1) / 2, 100,000) 
-	 * 1 <= u, v <= N
-	 * u != v 두 뉴런 사이는 최대 1개의 시냅스(edge)만 존재
-	 * 
+	 * 4 <= N <= 100,000 
+	 * -1,000 <= Ai <= 1,000
 	 * 
 	 */
 
@@ -40,31 +36,57 @@ public class Main {
 		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
 		StringBuilder sb = new StringBuilder();
 
+		N = Integer.parseInt(br.readLine());
+		arr = new int[N];
 		StringTokenizer st = new StringTokenizer(br.readLine());
-		N = Integer.parseInt(st.nextToken());
-		M = Integer.parseInt(st.nextToken());
-
-		makeSet();
-		for (int i = 0; i < M; i++) {
-			st = new StringTokenizer(br.readLine());
-			int u = Integer.parseInt(st.nextToken());
-			int v = Integer.parseInt(st.nextToken());
-			create(u, v);
+		for (int i = 0; i < N; i++) {
+			arr[i] = Integer.parseInt(st.nextToken());
 		}
 
 		// 문제풀이
-		// 트리 : 사이클이 존재하지 않는 연결 그래프 만들기
-		// Connected Component 연결 문제
-		// Union-Find
-		// 이미 연결된 C.C를 끊을 수도 있어야 한다
+		// 배열을 4개로 나누기
+		// - 100,000에서 3가지 수 뽑기, 10^5 ^ 3 TLE
+		// - N=100,000 => O(NlogN) 안쪽으로 해결해야 함
 
-		// 사이클 끊기 -> Union-Find 실행
-		// 입력받으면서 CC를 확인할 때, Cycle이면 애초에 연결하지 않기(끊는연산+1)
-		// Union 연산 하면서 +1
-		for (int i = 1; i < N; i++) {
-			union(i, i + 1);
+		// 1. 누적합은 4의 배수여야 함
+		// 2. 중간에 0이라면?
+		// 3. DP
+		prefix = new int[N + 1];
+		for (int i = 1; i <= N; i++) {
+			prefix[i] = prefix[i - 1] + arr[i - 1];
 		}
-		sb.append(cnt);
+		dp = new long[N + 1][4];
+
+		long ans = 0;
+		// 총 합이 4로 나누어 떨어져야 함
+		if (prefix[N] % 4 == 0) {
+			// 총합이 0인 경우
+			if (prefix[N] == 0) {
+				// 누적합이 0인 부분 3개 선택
+				long zero = 0;
+				for (int i = 1; i <= N; i++) {
+					if (prefix[i] == 0) {
+						zero++;
+					}
+				}
+				ans = (zero - 1) * (zero - 2) * (zero - 3) / 6; // zeroC3
+			}
+			// 총합이 0이 아닌 경우
+			else {
+				x = prefix[N] / 4; // 누적합을 4로 나눈값
+				for (int i = 0; i <= N; i++) { // 누적합 초기화
+					Arrays.fill(dp[i], -1);
+				}
+
+				for (int i = 1; i <= N; i++) {
+					if (prefix[i] == x) { // 탐색 시작
+						ans += topDown(i + 1, 1); // 1번쨰
+					}
+				}
+			}
+		}
+
+		sb.append(ans);
 
 		// 출력
 		bw.write(sb.toString());
@@ -75,43 +97,38 @@ public class Main {
 	}
 
 	static int N;
-	static int M;
-	static int[] parent;
-	static int cnt;
+	static int[] arr;
+	static int[] prefix;
+	static int x;
+	static long[][] dp; // i번쨰까지 수를 j개로 나누는 경우의 수
 
-	static void makeSet() {
-		parent = new int[N + 1];
-		for (int i = 1; i <= N; i++) {
-			parent[i] = i;
+	static long topDown(int idx, int cnt) {
+		if (dp[idx][cnt] >= 0) { // Memoization
+			return dp[idx][cnt];
 		}
-	}
 
-	static int findSet(int x) {
-		if (parent[x] == x) {
-			return x;
-		} else {
-			return parent[x] =  findSet(parent[x]); // Path Compression
+		if (idx > N) {
+			return dp[idx][cnt] = 0;
 		}
-	}
 
-	static void create(int x, int y) {
-		int xRoot = findSet(x);
-		int yRoot = findSet(y);
-
-		if (xRoot == yRoot) {
-			cnt++;
-		} else {
-			parent[yRoot] = xRoot;
+		if (cnt == 3) { // 마지막 탐색의 경우
+			if (prefix[N] - prefix[idx - 1] == x) { // 남은 구간의 합이 prefix[N-1]/4인지 확인
+				return dp[idx][cnt] = 1; // 맞으면
+			} else {
+				return dp[idx][cnt] = 0;
+			}
 		}
-	}
 
-	static void union(int x, int y) {
-		int xRoot = findSet(x);
-		int yRoot = findSet(y);
+		// 마지막 탐색이 아닌 경우
+		long result = 0;
+		for (int i = idx; i <= N; i++) {
+			long tmp = prefix[i] - prefix[idx - 1]; // i~idx-1구간 계산
 
-		if (xRoot != yRoot) {
-			parent[yRoot] = xRoot;
-			cnt++;
+			if (tmp == x) { // 배수이면
+				result += topDown(i + 1, cnt + 1); // 다음 탐색 진행
+			}
 		}
+
+		return dp[idx][cnt] = result;
 	}
 }
