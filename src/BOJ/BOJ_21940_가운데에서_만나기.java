@@ -1,3 +1,4 @@
+package BOJ;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -8,7 +9,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.StringTokenizer;
 
-public class Main {
+public class BOJ_21940_가운데에서_만나기 {
 	/*
 	 * BOJ 21940. 가운데에서 만나기 
 	 * ---------------------------
