@@ -1,3 +1,4 @@
+package BOJ;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -5,7 +6,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.util.*;
 
-public class Main {
+public class BOJ_2109_순회강연 {
     /*
      * BOJ 2109. 순회강연
      * ---------------
