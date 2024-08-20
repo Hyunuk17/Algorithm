@@ -46,7 +46,7 @@ public class Main {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
         StringBuilder sb = new StringBuilder();
-        
+
         StringTokenizer st= new StringTokenizer(br.readLine());
         N = Integer.parseInt(st.nextToken());
         B = Integer.parseInt(st.nextToken());
@@ -109,7 +109,7 @@ public class Main {
         bw.close();
         br.close();
     }
-    
+ 
     static int N;
     static int B;
     static int W;
