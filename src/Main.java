@@ -7,23 +7,39 @@ import java.util.*;
 
 public class Main {
     /*
-     * BOJ 2109. 순회강연
-     * ---------------
+     * BOJ 15831. 준표의 조약돌
+     * --------------------
      * 
      * [문제설몀]
-     * 한 저명한 학자에게 N개 대학에서 강연 요청
-     * - d일 안에 와서 강연을 해주면 p 강연료 지불
-     * - 가장 돈을 맣이 버는 순회강연
-     * - 하루에 최대 한 곳에서만 강연 가능
+     * 산책로
+     * - 일렬로 검은색과 흰색 조약돟이 놓여 있음
+     * - 총 N개의 조약돌은 1~N번까지 번호가 붙혀져 있음
+     * 
+     * 산책
+     * - 임의의 지점에서 시작, 원하는 지점에서 빠져나옴
+     * - 산책한 구간에 있는 모든 조약돌을 주움
+     * - 가능한 한 더 긴 구간을 산책
+     * 
+     * 조건
+     * - 까만색 조약돌을 B개 이하로 줍기
+     * - 흰색 조약돌 W개 이상 줍기
+     * 
      * 
      * [입력]
-     * 0 <= N <= 10,000
-     * 1 <= P <= 10,000
-     * 1 <= D <= 10,000
-     *
+     * 총 조약돌의 개수 : N
+     * 검은 조약돌의 최대개수 : B
+     * 하얀 조약돌의 최소개수 : W
+     * 
+	 *
      * [출력]
+     * 걷게 될 가장 긴 구간의 길이 출력
+     * - 조건에 맞는 구간이 없다면 0
      * 
      * [제한사항]
+     * 1 <= N <= 300,000
+     * 0 <= B, W, B+W <= N
+     * 
+     * 
      */
     public static void main(String[] args) throws IOException {
         // 입력
@@ -31,44 +47,60 @@ public class Main {
         BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
         StringBuilder sb = new StringBuilder();
         
-        N = Integer.parseInt(br.readLine());
-
-        lecture = new int[N][2];
-        for(int i=0;i<N;i++) {
-        	StringTokenizer st = new StringTokenizer(br.readLine());
-        	int p = Integer.parseInt(st.nextToken());
-        	int d = Integer.parseInt(st.nextToken());
-        	lecture[i][0] = p;
-        	lecture[i][1] = d;
-        }
-  
-        // 문제풀이
-        // greedy
-        // 강연은 며칠에 걸쳐서 하는 게 아니라 단 하루만 진행
-        // 어떤 강연을 먼저 선택할 것인지를 정하는 문제
-        // 정렬을 통해 비용이 큰 순서대로 정렬
+        StringTokenizer st= new StringTokenizer(br.readLine());
+        N = Integer.parseInt(st.nextToken());
+        B = Integer.parseInt(st.nextToken());
+        W = Integer.parseInt(st.nextToken());
         
-        Arrays.sort(lecture, (o1, o2) -> {
-        	if(o1[0] == o2[0]) {
-        		return o2[1] - o1[1];
+        arr = new char[N];
+        String str = br.readLine();
+        arr = str.toCharArray();
+        
+        // 문제풀이
+        // 300,000만 == 3*10^5
+        // O(N) * O(logN) 이하로 풀어야 한다
+        // 슬라이드 윈도우 : O(N)
+        // - 1번에서 시작 돌을 주으며 진행,
+        // - 검은 돌이 B개를 넘으면 중단
+        // - 각 과정마다 검은돌, 하얀돌 개수가 조건에 부합하는지 확인
+        
+        int start = 0;
+        int end = 0;
+        int wCnt = 0;
+        int bCnt = 0;
+        int window = 0;
+        
+        while(end < N) {
+        	// 검은 돌을 B개 이상 주웠다면
+        	if(bCnt > B) {
+        		if(arr[start] == 'W') {
+        			wCnt--;
+        		}
+        		else {
+        			bCnt--;
+        		}
+        		
+        		window--;
+        		start++;
+        	}
+        	// 검은 돌을 B개 이하로 주워, 더 주워도 된다면
+        	else {
+        		if(arr[end] == 'W') {
+        			wCnt++;
+        		}
+        		else {
+        			bCnt++;
+        		}
+        		end++;
+        		window++;
         	}
         	
-        	return o2[0] - o1[0];
-        });
-
-        
-        day = new boolean[10001];
-        for(int i=0;i<N;i++) {
-        	for(int j=lecture[i][1];j>=1;j--) {
-        		if(day[j] == false) {
-        			day[j] = true;
-        			result += lecture[i][0];
-        			break;
-        		}
+        	if(bCnt<=B && wCnt >= W) {
+        		max = Math.max(max, window);
         	}
         }
-        
-        sb.append(result);
+       
+        sb.append(max);
         
         // 출력
         bw.write(sb.toString());
@@ -79,7 +111,8 @@ public class Main {
     }
     
     static int N;
-    static int[][] lecture;
-    static boolean[] day;
-    static int result;
+    static int B;
+    static int W;
+    static char[] arr;
+    static int max;
 }
