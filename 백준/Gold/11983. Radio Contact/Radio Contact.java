@@ -122,15 +122,6 @@ public class Main {
         	
         }
         
-//        for(int i=0;i<=N;i++) {
-//        	System.out.print("[" + fPositions.get(i).x + "," + fPositions.get(i).y + "], ");
-//        }
-//        System.out.println();
-//        for(int i=0;i<=M;i++) {
-//        	System.out.print("[" + bPositions.get(i).x + "," + bPositions.get(i).y + "], ");
-//        }
-//        System.out.println();
-
         // 문제풀이
         // distance^2 = (fx-bx)^2 + (fy-by)^2
         // i : John의 현재 단계
@@ -142,15 +133,10 @@ public class Main {
     	}
         
         // Recurrence
-//        dp[i][j] = Math.min(dp[i-1][j] + f, dp[i][j-1] + b, dp[i-1][j-1] + f + b)
+        // dp[i][j] = Math.min(dp[i-1][j] + f, dp[i][j-1] + b, dp[i-1][j-1] + f + b)
         // 1. f, b의 단계별 위치를 저장한다.
         // 2. 단계별 DP값을 계산한다.
         topDown(N, M);
-        
-//        for(int i=0;i<=N;i++) {
-//        	System.out.println(Arrays.toString(dp[i]));
-//        }
-        
         sb.append(dp[N][M] - dp[0][0]);
                 
         // 출력
@@ -174,8 +160,6 @@ public class Main {
     static int[][] dp;
     
     static int topDown(int i, int j) {
-//    	System.out.println("(" + i + ", " + j + ")");
-    	
     	if(dp[i][j] != -1) { // memoization
     		return dp[i][j]; 
     	}
@@ -186,11 +170,9 @@ public class Main {
     	}
     	
     	if(i==0) {
-//    		return dp[i][j] = dp[i][j-1] + getDistance(fPositions.get(0), bPositions.get(j));
     		return dp[i][j] = topDown(i, j-1) + getDistance(fPositions.get(0), bPositions.get(j));
     	}
     	if(j==0) {
-//    		return dp[i][j] = dp[i-1][j] + getDistance(fPositions.get(i), bPositions.get(0));
     		return dp[i][j] = topDown(i-1, j) + getDistance(fPositions.get(i), bPositions.get(0));
     	}
     	
