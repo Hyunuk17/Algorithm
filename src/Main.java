@@ -18,16 +18,17 @@ public class Main {
 	 *
      * [제한사항]
 	 *
-     */
+	 */
     public static void main(String[] args) throws IOException {
         // 입력
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
         StringBuilder sb = new StringBuilder();
-       
+        
         
         // 문제풀이
         /**/
+        
         
         // 출력
         bw.write(sb.toString());
@@ -36,4 +37,4 @@ public class Main {
         bw.close();
         br.close();
     }
- }
+}
