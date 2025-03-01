@@ -6,7 +6,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.util.*;
 
-public class Main {
+public class BOJ_14284_간선_이어가기_2 {
     /*
      * BOJ 14284. 간선 이어가기 2
      * -----------------------
